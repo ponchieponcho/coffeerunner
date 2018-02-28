@@ -22,7 +22,6 @@ orderForm.addEventListener('submit', function(event){
         return '';
     }
 
-   
     var sizeValue = getRadio('size');
     console.log(sizeValue);
 
