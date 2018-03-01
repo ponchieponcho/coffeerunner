@@ -1,6 +1,31 @@
 
 var coffeeOrders = [];
 var orderNumber = 0;
+var jsonString = localStorage.getItem('orders');
+var localStorageOrders = JSON.parse(jsonString); 
+
+var createOrdersFromLocal = function () {
+    if (localStorageOrders===null) {
+        localStorageOrders=[];
+    } else {
+    localStorageOrders.forEach(function(array) {
+        var newDiv = document.createElement('div');
+        var localUl = document.createElement('ul');
+        var section = document.querySelector('section');
+        var btnComplete = document.createElement('button');
+        btnComplete.innerHTML = "Complete Order";
+        btnComplete.setAttribute("type", "complete");
+        section.appendChild(newDiv);
+        newDiv.appendChild(localUl);
+        localUl.classList.add("not-completed");
+        localUl.innerHTML = '<h5>Order# ' + orderNumber + '</h5>Coffee Order: '+ array.coffee + '<br>' + 'Email: ' + array.email + '<br>' + 'Size: ' + array.size + '<br>' + 'Flavor Shot: ' + array.flavor + '<br>' + 'Caffeine Rating: ' + array.strength + '<br>';
+        localUl.appendChild(btnComplete);
+        // btnClick();
+    })
+}
+};
+
+createOrdersFromLocal();
 
 var orderForm = document.querySelector('form');
 orderForm.addEventListener('submit', function(event){
@@ -55,31 +80,41 @@ orderForm.addEventListener('submit', function(event){
     btnComplete.innerHTML = "Complete Order";
     btnComplete.setAttribute("type", "complete")
 
-    var display1Array = JSON.stringify(coffeeList.coffee, null, 4);
-    var display2Array = JSON.stringify(coffeeList.email, null, 4);
-    var display3Array = JSON.stringify(coffeeList.size, null, 4);
-    var display4Array = JSON.stringify(coffeeList.flavor, null, 4);
-    var display5Array = JSON.stringify(coffeeList.strength, null, 4);
+    var display1Array = JSON.stringify(coffeeList.coffee);
+    var display2Array = JSON.stringify(coffeeList.email);
+    var display3Array = JSON.stringify(coffeeList.size);
+    var display4Array = JSON.stringify(coffeeList.flavor);
+    var display5Array = JSON.stringify(coffeeList.strength);
     newUl.innerHTML = '<h5>Order# ' + orderNumber + '</h5>Coffee Order: '+ display1Array + '<br>' + 'Email: ' + display2Array + '<br>' + 'Size: ' + display3Array + '<br>' + 'Flavor Shot: ' + display4Array+ '<br>' + 'Caffeine Rating: ' + display5Array + '<br>';
 
     section.appendChild(newDiv);
     newDiv.appendChild(newUl);
     newUl.classList.add("not-completed");
     newUl.appendChild(btnComplete);
-
-    btnComplete.addEventListener('click', function(){
-        var divId = newDiv.id
-        newDiv.remove();
-        var updatedOrders = [];
-        for(var i = 0; i < coffeeOrders.length; i++) {
-            if(coffeeOrders[i].id !== divId) {
-                updatedOrders.push(coffeeOrders[i]);
+    
+// Enables buttons to delete order and updates array
+    var btnClick = function() {
+        btnComplete.addEventListener('click', function(){
+            var divId = newDiv.id
+            newDiv.remove();
+            var updatedOrders = [];
+            for(var i = 0; i < coffeeOrders.length; i++) {
+                if(coffeeOrders[i].id !== divId) {
+                    updatedOrders.push(coffeeOrders[i]);
+                }
             }
-        }
-        coffeeOrders = updatedOrders;
-    });
+            coffeeOrders = updatedOrders;
+            localStorage.setItem('orders', JSON.stringify(coffeeOrders));
+        });
+    };
+    btnClick();
+
+// adds orders to local storage
+localStorage.setItem('orders', JSON.stringify(coffeeOrders));
 
 }); //end of orderform eventListner
+
+
 
 
 
