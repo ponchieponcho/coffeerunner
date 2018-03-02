@@ -1,31 +1,61 @@
 
-var coffeeOrders = [];
-var orderNumber = 0;
 var jsonString = localStorage.getItem('orders');
 var localStorageOrders = JSON.parse(jsonString); 
+var coffeeOrders = [];
+var orderNumber = 0;
+var serverOrders = [];
+var newServerOrders = [];
 
-var createOrdersFromLocal = function () {
-    if (localStorageOrders===null) {
-        localStorageOrders=[];
-    } else {
-    localStorageOrders.forEach(function(array) {
-        var newDiv = document.createElement('div');
-        var localUl = document.createElement('ul');
-        var section = document.querySelector('section');
-        var btnComplete = document.createElement('button');
-        btnComplete.innerHTML = "Complete Order";
-        btnComplete.setAttribute("type", "complete");
-        section.appendChild(newDiv);
-        newDiv.appendChild(localUl);
-        localUl.classList.add("not-completed");
-        localUl.innerHTML = '<h5>Order# ' + orderNumber + '</h5>Coffee Order: '+ array.coffee + '<br>' + 'Email: ' + array.email + '<br>' + 'Size: ' + array.size + '<br>' + 'Flavor Shot: ' + array.flavor + '<br>' + 'Caffeine Rating: ' + array.strength + '<br>';
-        localUl.appendChild(btnComplete);
-        // btnClick();
-    })
-}
-};
+    var getServerData = function() {
+        console.log(savedata);//doest work 
 
-createOrdersFromLocal();
+        return savedata = $.get("https://dc-coffeerun.herokuapp.com/api/coffeeorders",function(data) {
+            makeNewArrayFromServer(data);
+            console.log(newServerOrders); //works
+
+        });
+    };
+      
+    var makeNewArrayFromServer = function(array) {
+        $.each(array, function( i, val ) {
+            var coffeeList = {"coffee":val.coffee,
+                    "email":val.emailAddress,
+                    "size":val.size,
+                    "flavor":val.flavor,
+                    "strength":val.strength,
+                    "id":val._id};
+                    newServerOrders.push(coffeeList);
+                    
+          }) 
+          console.log(newServerOrders);//works
+    };
+    console.log(getServerData(newServerOrders));
+  
+
+// var createOrdersFromLocal = function () {
+//     if (localStorageOrders===null) {
+//         localStorageOrders=[];
+//     } else {
+//     localStorageOrders.forEach(function(array) {
+//         var localDiv = document.createElement('div');
+//         var localUl = document.createElement('ul');
+//         var section = document.querySelector('section');
+//         var btnComplete = document.createElement('button');
+//         btnComplete.innerHTML = "Complete Order";
+//         btnComplete.setAttribute("type", "complete");
+//         section.appendChild(localDiv);
+//         localDiv.appendChild(localUl);
+//         localDiv.classList.add("not-completed");
+//         localUl.innerHTML = '<h5>Order# ' + orderNumber + '</h5>Coffee Order: '+ array.coffee + '<br>' + 'Email: ' + array.email + '<br>' + 'Size: ' + array.size + '<br>' + 'Flavor Shot: ' + array.flavor + '<br>' + 'Caffeine Rating: ' + array.strength + '<br>';
+//         localUl.appendChild(btnComplete);
+       
+//     })
+// }
+// };
+
+// createOrdersFromLocal();
+
+
 
 var orderForm = document.querySelector('form');
 orderForm.addEventListener('submit', function(event){
@@ -89,32 +119,38 @@ orderForm.addEventListener('submit', function(event){
 
     section.appendChild(newDiv);
     newDiv.appendChild(newUl);
-    newUl.classList.add("not-completed");
+    newDiv.classList.add("not-completed");
     newUl.appendChild(btnComplete);
-    
-// Enables buttons to delete order and updates array
-    var btnClick = function() {
-        btnComplete.addEventListener('click', function(){
-            var divId = newDiv.id
-            newDiv.remove();
-            var updatedOrders = [];
+
+    // Enables buttons to delete order and updates array
+    btnComplete.addEventListener('click', function(){
+        var divId = newDiv.id
+        newDiv.remove();
+        var updatedOrders = [];
             for(var i = 0; i < coffeeOrders.length; i++) {
                 if(coffeeOrders[i].id !== divId) {
                     updatedOrders.push(coffeeOrders[i]);
                 }
             }
-            coffeeOrders = updatedOrders;
-            localStorage.setItem('orders', JSON.stringify(coffeeOrders));
-        });
-    };
-    btnClick();
+        
+        coffeeOrders = updatedOrders;
 
-// adds orders to local storage
+        
+    });
+    
 localStorage.setItem('orders', JSON.stringify(coffeeOrders));
 
-}); //end of orderform eventListner
+});
 
-
+orderForm.addEventListener('reset', function(event){
+    // Prevents default handling of submit 
+    event.preventDefault();
+    localStorage.clear();
+    var a = document.querySelectorAll('.not-completed');
+    for (var i = 0; i < a.length;i++) {
+        a[i].remove();
+    }
+});
 
 
 
