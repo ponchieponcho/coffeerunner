@@ -2,35 +2,62 @@
 var jsonString = localStorage.getItem('orders');
 var localStorageOrders = JSON.parse(jsonString); 
 var coffeeOrders = [];
-var orderNumber = 0;
 var serverOrders = [];
+
+
+var promise = $.ajax({
+    url: "https://dc-coffeerun.herokuapp.com/api/coffeeorders"
+  });
+
+var render = function(data) { // creates orders from server data
+    makeNewArrayFromServer(data);
+    createOrdersFromServer(newServerOrders);
+    console.log(newServerOrders);
+}
+
 var newServerOrders = [];
+var makeNewArrayFromServer = function(array) { //makes new array from server data
+    $.each(array, function( i, val ) {
+        var coffeeList = {"coffee":val.coffee,
+                "email":val.emailAddress,
+                "size":val.size,
+                "flavor":val.flavor,
+                "strength":val.strength,
+                "id":val._id};
+        newServerOrders.push(coffeeList);
+                
+      }) 
+};
 
-    var getServerData = function() {
-        console.log(savedata);//doest work 
+var createOrdersFromServer = function() {
+    newServerOrders.forEach(function(array,i) {
+        var localDiv = document.createElement('div');
+        var localUl = document.createElement('ul');
+        var section = document.querySelector('section');
+        var btnComplete = document.createElement('button');
+        btnComplete.innerHTML = "Complete Order";
+        btnComplete.setAttribute("type", "complete");
+        section.appendChild(localDiv);
+        localDiv.appendChild(localUl);
+        localDiv.classList.add("not-completed");
+        i++;
+        localUl.innerHTML = '<h5>Server Order# ' + i + '</h5>Coffee Order: '+ array.coffee + '<br>' + 'Email: ' + array.email + '<br>' + 'Size: ' + array.size + '<br>' + 'Flavor Shot: ' + array.flavor + '<br>' + 'Caffeine Rating: ' + array.strength + '<br>';
+        localUl.appendChild(btnComplete);
+       
+    })
+};
 
-        return savedata = $.get("https://dc-coffeerun.herokuapp.com/api/coffeeorders",function(data) {
-            makeNewArrayFromServer(data);
-            console.log(newServerOrders); //works
+promise.then(render); // gets servers data then passes it to render
 
-        });
-    };
+    // var getServerData = function() {
+    //     return savedata = $.get("https://dc-coffeerun.herokuapp.com/api/coffeeorders",function(data) {
+    //         makeNewArrayFromServer(data);
+    //         console.log(newServerOrders); //works
+
+    //     });
+    // };
       
-    var makeNewArrayFromServer = function(array) {
-        $.each(array, function( i, val ) {
-            var coffeeList = {"coffee":val.coffee,
-                    "email":val.emailAddress,
-                    "size":val.size,
-                    "flavor":val.flavor,
-                    "strength":val.strength,
-                    "id":val._id};
-                    newServerOrders.push(coffeeList);
-                    
-          }) 
-          console.log(newServerOrders);//works
-    };
-    console.log(getServerData(newServerOrders));
-  
+
 
 // var createOrdersFromLocal = function () {
 //     if (localStorageOrders===null) {
@@ -53,10 +80,9 @@ var newServerOrders = [];
 // }
 // };
 
-// createOrdersFromLocal();
 
 
-
+var orderNumber = 0;
 var orderForm = document.querySelector('form');
 orderForm.addEventListener('submit', function(event){
     // Prevents default handling of submit 
@@ -79,10 +105,7 @@ orderForm.addEventListener('submit', function(event){
     }
     var sizeValue = getRadio('size');
 
-    //increases order number each time submit is clicked
-    ++orderNumber; 
-
-    function guidGenerator() {
+    function guidGenerator() { //generates random id 
         var S4 = function() {
            return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
         };
@@ -115,6 +138,7 @@ orderForm.addEventListener('submit', function(event){
     var display3Array = JSON.stringify(coffeeList.size);
     var display4Array = JSON.stringify(coffeeList.flavor);
     var display5Array = JSON.stringify(coffeeList.strength);
+    orderNumber++;
     newUl.innerHTML = '<h5>Order# ' + orderNumber + '</h5>Coffee Order: '+ display1Array + '<br>' + 'Email: ' + display2Array + '<br>' + 'Size: ' + display3Array + '<br>' + 'Flavor Shot: ' + display4Array+ '<br>' + 'Caffeine Rating: ' + display5Array + '<br>';
 
     section.appendChild(newDiv);
