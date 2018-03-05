@@ -12,18 +12,19 @@ var promise = $.ajax({
 var render = function(data) { // creates orders from server data
     makeNewArrayFromServer(data);
     createOrdersFromServer(newServerOrders);
+    console.log('List of orders on server:')
     console.log(newServerOrders);
 }
 
 var newServerOrders = [];
 var makeNewArrayFromServer = function(array) { //makes new array from server data
     $.each(array, function( i, val ) {
-        var coffeeList = {"coffee":val.coffee,
-                "email":val.emailAddress,
-                "size":val.size,
-                "flavor":val.flavor,
-                "strength":val.strength,
-                "id":val._id};
+        var coffeeList = {'coffee':val.coffee,
+                'emailAddress':val.emailAddress,
+                'size':val.size,
+                'flavor':val.flavor,
+                'strength':val.strength,
+                'id':val._id};
         newServerOrders.push(coffeeList);
                 
       }) 
@@ -41,7 +42,7 @@ var createOrdersFromServer = function() {
         localDiv.appendChild(localUl);
         localDiv.classList.add("not-completed");
         i++;
-        localUl.innerHTML = '<h5>Server Order# ' + i + '</h5>Coffee Order: '+ array.coffee + '<br>' + 'Email: ' + array.email + '<br>' + 'Size: ' + array.size + '<br>' + 'Flavor Shot: ' + array.flavor + '<br>' + 'Caffeine Rating: ' + array.strength + '<br>';
+        localUl.innerHTML = '<h5>Server Order# ' + i + '</h5>Coffee Order: '+ array.coffee + '<br>' + 'Email: ' + array.emailAddress + '<br>' + 'Size: ' + array.size + '<br>' + 'Flavor Shot: ' + array.flavor + '<br>' + 'Caffeine Rating: ' + array.strength + '<br>';
         localUl.appendChild(btnComplete);
        
     })
@@ -49,39 +50,8 @@ var createOrdersFromServer = function() {
 
 promise.then(render); // gets servers data then passes it to render
 
-    // var getServerData = function() {
-    //     return savedata = $.get("https://dc-coffeerun.herokuapp.com/api/coffeeorders",function(data) {
-    //         makeNewArrayFromServer(data);
-    //         console.log(newServerOrders); //works
 
-    //     });
-    // };
-      
-
-
-// var createOrdersFromLocal = function () {
-//     if (localStorageOrders===null) {
-//         localStorageOrders=[];
-//     } else {
-//     localStorageOrders.forEach(function(array) {
-//         var localDiv = document.createElement('div');
-//         var localUl = document.createElement('ul');
-//         var section = document.querySelector('section');
-//         var btnComplete = document.createElement('button');
-//         btnComplete.innerHTML = "Complete Order";
-//         btnComplete.setAttribute("type", "complete");
-//         section.appendChild(localDiv);
-//         localDiv.appendChild(localUl);
-//         localDiv.classList.add("not-completed");
-//         localUl.innerHTML = '<h5>Order# ' + orderNumber + '</h5>Coffee Order: '+ array.coffee + '<br>' + 'Email: ' + array.email + '<br>' + 'Size: ' + array.size + '<br>' + 'Flavor Shot: ' + array.flavor + '<br>' + 'Caffeine Rating: ' + array.strength + '<br>';
-//         localUl.appendChild(btnComplete);
-       
-//     })
-// }
-// };
-
-
-
+// Runs after hitting submit button
 var orderNumber = 0;
 var orderForm = document.querySelector('form');
 orderForm.addEventListener('submit', function(event){
@@ -114,12 +84,12 @@ orderForm.addEventListener('submit', function(event){
     
 
     // Creates array with object
-    var coffeeList = {"coffee":coffeeValue,
-                    "email":emailValue,
-                    "size":sizeValue,
-                    "flavor":flavorValue,
-                    "strength":strValue,
-                    "id":guidGenerator()};
+    var coffeeList = {'coffee':coffeeValue,
+                    'emailAddress':emailValue,
+                    'size':sizeValue,
+                    'flavor':flavorValue,
+                    'strength':strValue,
+                    'id':guidGenerator()};
                     
     //Puts Order into Order Array
     coffeeOrders.push(coffeeList);
@@ -145,6 +115,10 @@ orderForm.addEventListener('submit', function(event){
     newDiv.appendChild(newUl);
     newDiv.classList.add("not-completed");
     newUl.appendChild(btnComplete);
+
+   $.post( "https://dc-coffeerun.herokuapp.com/api/coffeeorders", coffeeList, function(resp){
+       console.log(resp);
+   });
 
     // Enables buttons to delete order and updates array
     btnComplete.addEventListener('click', function(){
