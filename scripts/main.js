@@ -4,6 +4,27 @@ var localStorageOrders = JSON.parse(jsonString);
 var coffeeOrders = [];
 var serverOrders = [];
 
+// FETCH EXAMPLES
+// var url = 'https://example.com/profile';
+// var data = {username: 'example'};
+
+// fetch(url, {
+//   method: 'POST', // or 'PUT'
+//   body: JSON.stringify(data), 
+//   headers: new Headers({
+//     'Content-Type': 'application/json'
+//   })
+// }).then(res => res.json())
+// .catch(error => console.error('Error:', error))
+// .then(response => console.log('Success:', response));
+
+// fetch('https://dc-coffeerun.herokuapp.com/api/coffeeorders')
+//     .then(function(response){
+//         return response.json();
+//     })
+//     .then(function(myJson){
+//         console.log(myJson);
+//     });
 
 var promise = $.ajax({
     url: "https://dc-coffeerun.herokuapp.com/api/coffeeorders"
@@ -44,9 +65,30 @@ var createOrdersFromServer = function() {
         i++;
         localUl.innerHTML = '<h5>Server Order# ' + i + '</h5>Coffee Order: '+ array.coffee + '<br>' + 'Email: ' + array.emailAddress + '<br>' + 'Size: ' + array.size + '<br>' + 'Flavor Shot: ' + array.flavor + '<br>' + 'Caffeine Rating: ' + array.strength + '<br>';
         localUl.appendChild(btnComplete);
-       
-    })
-};
+
+
+        btnComplete.addEventListener('click', function(){
+            
+            var divId = localDiv.id
+            localDiv.remove();
+            var updatedOrders = [];
+            // $.ajax({ //EVIL BAD!
+            //     url: "https://dc-coffeerun.herokuapp.com/api/coffeeorders",
+            //     method: "DELETE", // use "GET" if server does not handle DELETE
+            //     data: { "post_id": $(this).data("id") },
+            //     dataType: "html"
+            //   })
+            //     for(var i = 0; i < array.length; i++) {
+            // //         if(coffeeOrders[i].id !== divId) {
+            // //             updatedOrders.push(coffeeOrders[i]);
+            // //         }
+            // //     }
+            
+            // // coffeeOrders = updatedOrders;
+            //     });
+            });
+     });
+    }
 
 promise.then(render); // gets servers data then passes it to render
 
@@ -116,7 +158,9 @@ orderForm.addEventListener('submit', function(event){
     newDiv.classList.add("not-completed");
     newUl.appendChild(btnComplete);
 
+    //needs to add - not just replace
    $.post( "https://dc-coffeerun.herokuapp.com/api/coffeeorders", coffeeList, function(resp){
+       console.log('Sent to server:');
        console.log(resp);
    });
 
@@ -148,7 +192,7 @@ orderForm.addEventListener('reset', function(event){
     for (var i = 0; i < a.length;i++) {
         a[i].remove();
     }
-});
+}); //End of form submit eventlistener 
 
 
 
